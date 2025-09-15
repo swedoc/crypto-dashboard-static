@@ -318,5 +318,25 @@
     <div style="max-width: 400px; margin: 20px auto; color: #888; font-size: 0.8em; text-align: center; font-style: italic;">
         The information, analysis and recommendations provided by this dashboard are for educational and informational purposes only and do not constitute financial, investment, tax or legal advice. Nothing on this platform should be construed as a recommendation or solicitation to buy, sell or hold any cryptocurrency or other financial instrument. Cryptocurrency trading involves substantial risks, including market volatility, liquidity constraints and regulatory uncertainty; losses can exceed initial capital. You are solely responsible for evaluating the merits and risks of any transaction, and you should consult a qualified financial, tax or legal professional before making any investment decision. Past performance is not indicative of future results. By using this dashboard, you acknowledge and accept full responsibility for your own trading decisions and agree that neither the dashboard’s creators nor any affiliates can be held liable for any gains, losses or damages arising from your use of the information provided.
     </div>
+<div id="static-inject-panel" style="margin:16px 0;padding:12px;border-radius:10px;background:#151515;color:#e6e6e6;border:1px solid #2a2a2a;font-family:system-ui,Arial,sans-serif">
+  <div style="font-size:14px;color:#9aa0a6;margin-bottom:8px">
+    Senast uppdaterad (UTC): {{ UPDATED_TS }}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="color:#9aa0a6;font-size:12px;margin-bottom:4px">/api/signal</div>
+      <div>signal: <b>{{ SIGNAL_SIGNAL }}</b></div>
+      <div>score: <b>{{ SIGNAL_SCORE }}</b></div>
+      <div>pfi: <b>{{ SIGNAL_PFI }}</b></div>
+      <div>price: <b>{{ SIGNAL_PRICE }}</b></div>
+    </div>
+    <div>
+      <div style="color:#9aa0a6;font-size:12px;margin-bottom:4px">/api/pgl</div>
+      <div>status: <b>{{ PGL_STATUS }}</b></div>
+      <div>score: <b>{{ PGL_SCORE }}</b></div>
+      <div>price: <b>{{ PGL_PRICE }}</b></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
