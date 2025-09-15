@@ -3,39 +3,74 @@
 <head>
   <meta charset="utf-8">
   <title>Crypto Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; background: #111; color: #eee; }
-    h1 { color: #0f0; margin: 0 0 1rem; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .box { background: #222; padding: 1rem; border-radius: 8px; }
-    .muted { color:#aaa; font-size: 0.9rem; }
-    pre { background:#191919; padding: .75rem; border-radius: 6px; overflow:auto; }
-    .kv { display:grid; grid-template-columns: 120px 1fr; gap: .4rem .8rem; margin-top:.5rem; }
-    .k { color:#bbb; }
+    :root { --bg:#0f0f10; --panel:#17181a; --muted:#9aa0a6; --txt:#e6e6e6; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; }
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; background: var(--bg); color: var(--txt); }
+    h1 { color: #32ff32; margin: 0 0 12px; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+    .card { background: var(--panel); border:1px solid #26282c; border-radius: 12px; padding: 14px; }
+    .kv { display:grid; grid-template-columns: 120px 1fr; gap: 6px 10px; margin-top: 6px; }
+    .k { color: var(--muted); }
+    .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-weight:600; font-size:12px; }
+    .b-ok { background:#13351e; color:var(--ok); }
+    .b-warn { background:#3a2a0b; color:var(--warn); }
+    .b-bad { background:#3a1515; color:var(--bad); }
+    pre { background:#111315; padding:8px; border-radius:8px; overflow:auto; margin-top:8px; }
   </style>
 </head>
 <body>
   <h1>Crypto Dashboard (Static)</h1>
   <div class="muted">Senast uppdaterad (UTC): {{ timestamp }}</div>
 
-  <div class="grid" style="margin-top: 1rem;">
-    <div class="box">
+  <div class="grid">
+    <!-- SIGNAL -->
+    <div class="card">
       <div class="muted">/api/signal</div>
       <div class="kv">
-        <div class="k">signal</div><div>{{ signal.signal if signal and signal.get('signal') is not none else '—' }}</div>
-        <div class="k">score</div><div>{{ signal.score if signal and signal.get('score') is not none else '—' }}</div>
-        <div class="k">pfi</div><div>{{ signal.pfi if signal and signal.get('pfi') is not none else '—' }}</div>
-        <div class="k">price</div><div>{{ signal.price if signal and signal.get('price') is not none else '—' }}</div>
+        <div class="k">signal</div>
+        <div>{{ signal.signal if signal and signal.get('signal') is not none else '—' }}</div>
+
+        <div class="k">score</div>
+        <div>
+          {% if signal and signal.get('score') is not none %}
+            {{ '%.3f'|format(signal.score) }}
+          {% else %}—{% endif %}
+        </div>
+
+        {% if signal and signal.get('pfi') is not none %}
+        <div class="k">pfi</div><div>{{ '%.3f'|format(signal.pfi) }}</div>
+        {% endif %}
+
+        {% if signal and signal.get('price') is not none %}
+        <div class="k">price</div><div>{{ '{:,.0f}'.format(signal.price) }}</div>
+        {% endif %}
       </div>
       <pre>{{ signal | tojson(indent=2) }}</pre>
     </div>
 
-    <div class="box">
+    <!-- PGL -->
+    <div class="card">
       <div class="muted">/api/pgl</div>
       <div class="kv">
-        <div class="k">status</div><div>{{ pgl.status if pgl and pgl.get('status') is not none else '—' }}</div>
-        <div class="k">score</div><div>{{ pgl.score if pgl and pgl.get('score') is not none else '—' }}</div>
-        <div class="k">price</div><div>{{ pgl.price if pgl and pgl.get('price') is not none else '—' }}</div>
+        <div class="k">status</div>
+        <div>
+          {% set col = (pgl.color if pgl and pgl.get('color') else '').lower() %}
+          {% set cls = 'b-ok' if 'green' in col else ('b-warn' if 'orange' in col else ('b-bad' if 'red' in col else '')) %}
+          <span class="badge {{ cls }}">{{ pgl.status if pgl and pgl.get('status') is not none else '—' }}</span>
+        </div>
+
+        <div class="k">score</div>
+        <div>
+          {% if pgl and pgl.get('score') is not none %}
+            {{ pgl.score }}
+          {% else %}—{% endif %}
+        </div>
+
+        {% if pgl and pgl.get('price') is not none %}
+        <div class="k">price</div><div>{{ '{:,.0f}'.format(pgl.price) }}</div>
+        {% endif %}
       </div>
       <pre>{{ pgl | tojson(indent=2) }}</pre>
     </div>
