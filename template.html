@@ -5,22 +5,40 @@
   <title>Crypto Dashboard</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 2rem; background: #111; color: #eee; }
-    h1 { color: #0f0; }
-    .box { background: #222; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
+    h1 { color: #0f0; margin: 0 0 1rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .box { background: #222; padding: 1rem; border-radius: 8px; }
+    .muted { color:#aaa; font-size: 0.9rem; }
+    pre { background:#191919; padding: .75rem; border-radius: 6px; overflow:auto; }
+    .kv { display:grid; grid-template-columns: 120px 1fr; gap: .4rem .8rem; margin-top:.5rem; }
+    .k { color:#bbb; }
   </style>
 </head>
 <body>
   <h1>Crypto Dashboard (Static)</h1>
-  <div class="box">
-    <h2>Signal</h2>
-    <p>Status: {{ signal.status }}</p>
-    <p>Score: {{ signal.score }}</p>
+  <div class="muted">Senast uppdaterad (UTC): {{ timestamp }}</div>
+
+  <div class="grid" style="margin-top: 1rem;">
+    <div class="box">
+      <div class="muted">/api/signal</div>
+      <div class="kv">
+        <div class="k">signal</div><div>{{ signal.signal if signal and signal.get('signal') is not none else '—' }}</div>
+        <div class="k">score</div><div>{{ signal.score if signal and signal.get('score') is not none else '—' }}</div>
+        <div class="k">pfi</div><div>{{ signal.pfi if signal and signal.get('pfi') is not none else '—' }}</div>
+        <div class="k">price</div><div>{{ signal.price if signal and signal.get('price') is not none else '—' }}</div>
+      </div>
+      <pre>{{ signal | tojson(indent=2) }}</pre>
+    </div>
+
+    <div class="box">
+      <div class="muted">/api/pgl</div>
+      <div class="kv">
+        <div class="k">status</div><div>{{ pgl.status if pgl and pgl.get('status') is not none else '—' }}</div>
+        <div class="k">score</div><div>{{ pgl.score if pgl and pgl.get('score') is not none else '—' }}</div>
+        <div class="k">price</div><div>{{ pgl.price if pgl and pgl.get('price') is not none else '—' }}</div>
+      </div>
+      <pre>{{ pgl | tojson(indent=2) }}</pre>
+    </div>
   </div>
-  <div class="box">
-    <h2>PGL</h2>
-    <p>Status: {{ pgl.status }}</p>
-    <p>Score: {{ pgl.score }}</p>
-  </div>
-  <p>Senast uppdaterad: {{ timestamp }}</p>
 </body>
 </html>
