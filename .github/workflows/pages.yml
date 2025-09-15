@@ -1,0 +1,33 @@
+name: Build and Deploy Static Dashboard
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # kör var 15:e minut
+  workflow_dispatch:         # möjlighet att köra manuellt
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt || true
+
+      - name: Run build script
+        run: python build_static.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
