@@ -27,7 +27,12 @@
   <div class="grid">
     <!-- SIGNAL -->
     <div class="card">
-      <div class="muted">/api/signal</div>
+      <div class="kv">
+        <div class="k">signal</div><div>{{SIGNAL_SIGNAL}}</div>
+        <div class="k">score</div><div>{{SIGNAL_SCORE}}</div>
+        <div class="k">pfi</div><div>{{SIGNAL_PFI}}</div>
+        <div class="k">price</div><div>{{SIGNAL_PRICE}}</div>
+      </div>
       <div class="kv">
         <div class="k">signal</div>
         <div>{{ signal.signal if signal and signal.get('signal') is not none else '—' }}</div>
