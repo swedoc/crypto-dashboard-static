@@ -198,8 +198,7 @@
     <div class="box">
         <div class="title">BTC Price (Binance)</div>
         <div class="value" style="color: #eee;">
-            {{ (price_value/1000000)|round(3) }} million USD<br/>
-            ({{ (100000000/price_value)|int }} sats/USD)
+            {{ SIGNAL_PRICE }}
         </div>
     </div>
 
