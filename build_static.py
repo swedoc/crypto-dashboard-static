@@ -12,21 +12,12 @@ def fetch_json(url: str, timeout: int = 30):
     return r.json()
 
 
-def fetch_btc_price(timeout: int = 20) -> float | None:
-    # 1) CoinGecko (stabil och snäll)
+def fetch_binance_btcusd(timeout: int = 20) -> float | None:
+    """Hämtar BTCUSDT-pris i USD från Binance."""
     try:
-        cg = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
-        d = requests.get(cg, timeout=timeout).json()
-        p = d.get("bitcoin", {}).get("usd")
-        if p:
-            return float(p)
-    except Exception:
-        pass
-    # 2) Binance fallback
-    try:
-        bn = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
-        p = float(requests.get(bn, timeout=timeout).json()["price"])
-        return p
+        url = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
+        data = requests.get(url, timeout=timeout).json()
+        return float(data["price"])
     except Exception:
         return None
 
@@ -50,7 +41,7 @@ def fmt_price0(x):
 
 
 def main():
-    # Hämta dina endpoints
+    # Hämta dina egna endpoints
     if not BASE:
         signal = {"error": "DATA_BASE_URL not set"}
         pgl = {"error": "DATA_BASE_URL not set"}
@@ -64,10 +55,10 @@ def main():
         except Exception as e:
             pgl = {"error": str(e)}
 
-    # BTC-pris (för priskortet)
-    btc_price_usd = fetch_btc_price()
+    # BTC-pris från BINANCE (endast)
+    btc_price_usd = fetch_binance_btcusd()
 
-    # Plocka fält ur dina JSON
+    # Fält ur dina JSON
     s_signal = signal.get("signal") if isinstance(signal, dict) else None
     s_score  = signal.get("score")  if isinstance(signal, dict) else None
     s_pfi    = signal.get("pfi")    if isinstance(signal, dict) else None
@@ -77,7 +68,7 @@ def main():
     p_score  = pgl.get("score")  if isinstance(pgl, dict) else None
     p_price  = pgl.get("price")  if isinstance(pgl, dict) else None
 
-    # Text till priskortet
+    # Text för “BTC Price (Binance)”
     if btc_price_usd:
         million = btc_price_usd / 1_000_000
         sats_per_usd = int(100_000_000 / btc_price_usd)
@@ -87,17 +78,17 @@ def main():
 
     updated = datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
 
-    # Ersättare (för både “injektionsrutan” och ev. placeholders i layout)
+    # Ersättare
     repl = {
         "{{ UPDATED_TS }}": updated,
         "{{ SIGNAL_SIGNAL }}": s_signal if s_signal is not None else "—",
         "{{ SIGNAL_SCORE }}": fmt_num(s_score),
         "{{ SIGNAL_PFI }}": fmt_num(s_pfi),
-        "{{ SIGNAL_PRICE }}": signal_price_block,
+        "{{ SIGNAL_PRICE }}": signal_price_block,  # används i BTC Price-kortet
         "{{ PGL_STATUS }}": p_status if p_status is not None else "—",
         "{{ PGL_SCORE }}": str(p_score) if p_score is not None else "—",
         "{{ PGL_PRICE }}": fmt_price0(p_price),
-        # Om du råkar ha kvar dessa i mallen någonstans:
+        # Om någonstans i layouten dyker dessa upp:
         "{{PRICE_MILLION}}": f"{(btc_price_usd/1_000_000):.3f}" if btc_price_usd else "—",
         "{{PRICE_SATS}}": f"{int(100_000_000 / btc_price_usd)}" if btc_price_usd else "—",
     }
